@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>eMarket PH Admin</title>
+    <link rel="icon" href="./app_icon.jpg" />
+    <link rel="preconnect" href="https://www.gstatic.com" />
+    <link rel="preconnect" href="https://unpkg.com" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div id="app" class="app-shell">
+      <section id="loginView" class="login-view">
+        <div class="login-brand">
+          <div class="brand-mark">
+            <img src="./app_icon.jpg" alt="eMarket PH logo" />
+          </div>
+          <div>
+            <p class="eyebrow">eMarket PH</p>
+            <h1>Admin Console</h1>
+            <p class="muted">
+              Review verification requests, reports, users, listings, and chats
+              from one secure dashboard.
+            </p>
+          </div>
+        </div>
+
+        <form id="loginForm" class="login-card">
+          <div>
+            <p class="eyebrow">Admin only</p>
+            <h2>Sign in</h2>
+          </div>
+          <label>
+            Email
+            <input id="emailInput" type="email" autocomplete="email" required />
+          </label>
+          <label>
+            Password
+            <input
+              id="passwordInput"
+              type="password"
+              autocomplete="current-password"
+              required
+            />
+          </label>
+          <button class="primary-btn" type="submit">
+            <i data-lucide="log-in"></i>
+            Sign in
+          </button>
+          <p id="loginError" class="form-error" role="alert"></p>
+        </form>
+      </section>
+
+      <section id="dashboardView" class="dashboard-view hidden">
+        <aside class="sidebar">
+          <div class="sidebar-brand">
+            <div class="brand-mark">
+              <img src="./app_icon.jpg" alt="eMarket PH logo" />
+            </div>
+            <div>
+              <strong>eMarket PH</strong>
+              <span>Admin Dashboard</span>
+            </div>
+          </div>
+
+          <nav class="nav-list" aria-label="Admin navigation">
+            <button class="nav-item active" data-section="overview">
+              <i data-lucide="layout-dashboard"></i>
+              Overview
+            </button>
+            <button class="nav-item" data-section="verification">
+              <i data-lucide="badge-check"></i>
+              Verification
+              <span id="verificationBadge" class="nav-badge">0</span>
+            </button>
+            <button class="nav-item" data-section="reports">
+              <i data-lucide="flag"></i>
+              Reports
+              <span id="reportsBadge" class="nav-badge">0</span>
+            </button>
+            <button class="nav-item" data-section="users">
+              <i data-lucide="users"></i>
+              Users
+            </button>
+            <button class="nav-item" data-section="listings">
+              <i data-lucide="store"></i>
+              Listings
+            </button>
+            <button class="nav-item" data-section="chats">
+              <i data-lucide="messages-square"></i>
+              Chats
+            </button>
+          </nav>
+
+          <button id="logoutButton" class="ghost-btn sidebar-logout">
+            <i data-lucide="log-out"></i>
+            Sign out
+          </button>
+        </aside>
+
+        <main class="main-panel">
+          <header class="topbar">
+            <div>
+              <p id="adminName" class="eyebrow">Admin</p>
+              <h1 id="sectionTitle">Overview</h1>
+            </div>
+            <div class="topbar-actions">
+              <div class="search-wrap">
+                <i data-lucide="search"></i>
+                <input
+                  id="globalSearch"
+                  type="search"
+                  placeholder="Search users, listings, reports"
+                />
+              </div>
+              <button id="refreshButton" class="icon-btn" title="Refresh">
+                <i data-lucide="refresh-cw"></i>
+              </button>
+            </div>
+          </header>
+
+          <section id="overviewSection" class="content-section"></section>
+          <section id="verificationSection" class="content-section hidden"></section>
+          <section id="reportsSection" class="content-section hidden"></section>
+          <section id="usersSection" class="content-section hidden"></section>
+          <section id="listingsSection" class="content-section hidden"></section>
+          <section id="chatsSection" class="content-section hidden"></section>
+        </main>
+      </section>
+
+      <div id="loadingOverlay" class="loading-overlay">
+        <div class="loader"></div>
+        <span>Checking admin access...</span>
+      </div>
+    </div>
+
+    <dialog id="detailDialog" class="detail-dialog">
+      <div class="dialog-shell">
+        <div class="dialog-header">
+          <div>
+            <p id="dialogKicker" class="eyebrow"></p>
+            <h2 id="dialogTitle"></h2>
+          </div>
+          <button id="closeDialog" class="icon-btn" title="Close">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <div id="dialogBody" class="dialog-body"></div>
+      </div>
+    </dialog>
+
+    <div id="toast" class="toast" role="status"></div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
