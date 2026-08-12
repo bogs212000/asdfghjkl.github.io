@@ -17,6 +17,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  setDoc,
   updateDoc,
   where,
   writeBatch,
@@ -43,6 +44,7 @@ const state = {
   listings: [],
   reports: [],
   chats: [],
+  adsConfig: {},
   unsubscribers: [],
 };
 
@@ -76,6 +78,7 @@ const sections = {
   users: document.querySelector("#usersSection"),
   listings: document.querySelector("#listingsSection"),
   chats: document.querySelector("#chatsSection"),
+  ads: document.querySelector("#adsSection"),
 };
 
 const sectionLabels = {
@@ -85,6 +88,7 @@ const sectionLabels = {
   users: "Users",
   listings: "Listings",
   chats: "Chats",
+  ads: "Ads",
 };
 
 els.loginForm.addEventListener("submit", async (event) => {
@@ -130,6 +134,7 @@ document.addEventListener("click", async (event) => {
   try {
     if (action === "view-user") openUserDetails(uid);
     if (action === "notify-user") openNotifyDialog(uid);
+    if (action === "message-user") openAdminMessageDialog(uid);
     if (action === "approve-user") await updateVerification(uid, true);
     if (action === "reject-user") await updateVerification(uid, false);
     if (action === "block-user") await blockUser(uid);
@@ -140,6 +145,8 @@ document.addEventListener("click", async (event) => {
     if (action === "report-status") await updateReportStatus(reportId, status);
     if (action === "view-chat") await openChatDetails(roomId);
     if (action === "send-notification") await sendNotificationFromDialog(uid);
+    if (action === "send-admin-message") await sendAdminMessageFromDialog(uid);
+    if (action === "save-ads") await saveAdsConfig();
   } catch (error) {
     toast(readableError(error), true);
   }
@@ -198,6 +205,10 @@ function subscribeDashboardData() {
       state.chats = snap.docs.map((item) => normalizeDoc(item));
       renderAll();
     }),
+    onSnapshot(doc(db, "appConfig", "ads"), (snap) => {
+      state.adsConfig = snap.exists() ? snap.data() : {};
+      renderAll();
+    }),
   ];
 }
 
@@ -250,6 +261,7 @@ function renderCurrentSection() {
     users: renderUsers,
     listings: renderListings,
     chats: renderChats,
+    ads: renderAds,
   };
   renderers[state.section]();
   refreshIcons();
@@ -286,6 +298,7 @@ function renderOverview() {
       ${statCard("Active listings", listings.filter((item) => item.status === "active").length, "store")}
       ${statCard("Open reports", openReports.length, "flag")}
       ${statCard("Pending verification", pendingUsers.length, "badge-check")}
+      ${statCard("Ad units", adUnitCount(), "badge-dollar-sign")}
     </div>
     <div class="grid-list">
       <div class="panel">
@@ -417,6 +430,65 @@ function renderChats() {
   `;
 }
 
+function renderAds() {
+  const config = state.adsConfig || {};
+  const knownFields = [
+    ["home", "Home banner"],
+    ["browse", "Browse banner"],
+    ["item_details", "Item details banner"],
+    ["my_listings", "My listings banner"],
+    ["post_listing_success", "Post listing success banner"],
+    ["rewarded_listing_boost", "Rewarded listing boost"],
+    ["app_open", "App open"],
+    ["interstitial", "Interstitial"],
+  ];
+  const extraKeys = Object.keys(config)
+    .filter((key) => !knownFields.some(([field]) => field === key))
+    .filter((key) => !["enabled", "testMode", "updatedAt", "updatedBy"].includes(key))
+    .sort();
+  sections.ads.innerHTML = `
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Ad unit management</h2>
+          <p class="muted panel-note">Saved to <strong>appConfig/ads</strong>. Your app can read these values anytime from Firebase.</p>
+        </div>
+        <span class="chip ${config.enabled === false ? "danger" : "success"}">${config.enabled === false ? "Ads disabled" : "Ads enabled"}</span>
+      </div>
+      <div class="panel-body">
+        <form id="adsForm" class="settings-form">
+          <div class="switch-row">
+            <label>
+              <input id="adsEnabled" type="checkbox" ${config.enabled === false ? "" : "checked"} />
+              Enable ads
+            </label>
+            <label>
+              <input id="adsTestMode" type="checkbox" ${config.testMode === true ? "checked" : ""} />
+              Test mode
+            </label>
+          </div>
+          <div class="field-grid">
+            ${knownFields.map(([field, label]) => adInput(field, label, config[field])).join("")}
+            ${extraKeys.map((field) => adInput(field, prettyLabel(field), config[field])).join("")}
+          </div>
+          <label>
+            Add custom ad key
+            <div class="inline-fields">
+              <input id="newAdKey" type="text" placeholder="Example: seller_profile" />
+              <input id="newAdValue" type="text" placeholder="Ad unit ID" />
+            </div>
+          </label>
+          <div class="card-actions">
+            <button class="primary-btn" type="button" data-action="save-ads">
+              <i data-lucide="save"></i> Save ad units
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+}
+
 function statCard(label, value, icon) {
   return `
     <div class="stat-card">
@@ -453,6 +525,9 @@ function userCard(user) {
         </button>
         <button class="soft-btn" data-action="notify-user" data-uid="${user.id}">
           <i data-lucide="bell"></i> Notify
+        </button>
+        <button class="soft-btn" data-action="message-user" data-uid="${user.id}">
+          <i data-lucide="message-circle"></i> Message
         </button>
         ${
           pending
@@ -591,6 +666,14 @@ function openUserDetails(uid) {
     </div>
     <div class="media-grid">
       ${verificationMedia(user)}
+    </div>
+    <div class="card-actions">
+      <button class="soft-btn" data-action="notify-user" data-uid="${user.id}">
+        <i data-lucide="bell"></i> Send notification
+      </button>
+      <button class="primary-btn" data-action="message-user" data-uid="${user.id}">
+        <i data-lucide="message-circle"></i> Message user
+      </button>
     </div>
     <div class="panel">
       <div class="panel-header">
@@ -739,6 +822,28 @@ function openNotifyDialog(uid) {
   `);
 }
 
+function openAdminMessageDialog(uid) {
+  const user = userById(uid);
+  if (!user) return toast("User not found.", true);
+  showDialog("Message user", displayName(user), `
+    <div class="field-group">
+      <label>
+        Message
+        <textarea id="adminMessageBody" placeholder="Write a message that will appear in the user's chat..."></textarea>
+      </label>
+      <label>
+        Also send notification title
+        <input id="adminMessageTitle" type="text" value="Message from eMarket PH admin" />
+      </label>
+    </div>
+    <div class="card-actions">
+      <button class="primary-btn" data-action="send-admin-message" data-uid="${uid}">
+        <i data-lucide="send"></i> Send message
+      </button>
+    </div>
+  `);
+}
+
 async function sendNotificationFromDialog(uid) {
   const title = document.querySelector("#notifyTitle")?.value.trim();
   const body = document.querySelector("#notifyBody")?.value.trim();
@@ -753,6 +858,88 @@ async function sendNotificationFromDialog(uid) {
   });
   els.dialog.close();
   toast("Notification sent.");
+}
+
+async function sendAdminMessageFromDialog(uid) {
+  const message = document.querySelector("#adminMessageBody")?.value.trim();
+  const title = document.querySelector("#adminMessageTitle")?.value.trim() ||
+    "Message from eMarket PH admin";
+  if (!message) return toast("Write a message first.", true);
+  const roomId = await createOrReuseAdminRoom(uid);
+  const messageRef = doc(collection(db, "chatRooms", roomId, "messages"));
+  const batch = writeBatch(db);
+  batch.set(messageRef, {
+    id: messageRef.id,
+    senderId: state.admin.uid,
+    type: "text",
+    text: message,
+    imageUrl: null,
+    latitude: null,
+    longitude: null,
+    readBy: [state.admin.uid],
+    createdAt: serverTimestamp(),
+  });
+  batch.update(doc(db, "chatRooms", roomId), {
+    lastMessageText: message,
+    lastMessageAt: serverTimestamp(),
+    unreadBy: [uid],
+    updatedAt: serverTimestamp(),
+  });
+  batch.set(doc(collection(db, "users", uid, "notifications")), {
+    type: "chat",
+    chatRoomId: roomId,
+    listingId: null,
+    title,
+    body: message,
+    read: false,
+    senderId: state.admin.uid,
+    createdAt: serverTimestamp(),
+  });
+  await batch.commit();
+  els.dialog.close();
+  toast("Message and notification sent.");
+}
+
+async function createOrReuseAdminRoom(uid) {
+  const existing = state.chats.find((chat) => {
+    const participants = chat.participantIds || [];
+    return participants.includes(uid) && participants.includes(state.admin.uid);
+  });
+  if (existing) return existing.id;
+  const roomRef = doc(collection(db, "chatRooms"));
+  await setDoc(roomRef, {
+    id: roomRef.id,
+    listingId: null,
+    listingIds: [],
+    participantIds: [state.admin.uid, uid],
+    blockedBy: [],
+    unreadBy: [],
+    createdAt: serverTimestamp(),
+    lastMessageAt: serverTimestamp(),
+    lastMessageText: "",
+  });
+  return roomRef.id;
+}
+
+async function saveAdsConfig() {
+  const form = document.querySelector("#adsForm");
+  if (!form) return;
+  const payload = {
+    enabled: document.querySelector("#adsEnabled")?.checked === true,
+    testMode: document.querySelector("#adsTestMode")?.checked === true,
+    updatedAt: serverTimestamp(),
+    updatedBy: state.admin.uid,
+  };
+  form.querySelectorAll("[data-ad-field]").forEach((input) => {
+    payload[input.dataset.adField] = input.value.trim();
+  });
+  const newKey = document.querySelector("#newAdKey")?.value.trim();
+  const newValue = document.querySelector("#newAdValue")?.value.trim();
+  if (newKey) {
+    payload[sanitizeAdKey(newKey)] = newValue || "";
+  }
+  await setDoc(doc(db, "appConfig", "ads"), payload, { merge: true });
+  toast("Ad unit settings saved.");
 }
 
 async function updateVerification(uid, verified) {
@@ -906,6 +1093,35 @@ function verificationMedia(user) {
 
 function emptyState(text) {
   return `<div class="empty-state">${escapeHtml(text)}</div>`;
+}
+
+function adInput(field, label, value) {
+  return `
+    <label>
+      ${escapeHtml(label)}
+      <input data-ad-field="${escapeAttr(field)}" type="text" value="${escapeAttr(value || "")}" placeholder="ca-app-pub-..." />
+    </label>
+  `;
+}
+
+function adUnitCount() {
+  return Object.entries(state.adsConfig || {})
+    .filter(([key, value]) => !["enabled", "testMode", "updatedAt", "updatedBy"].includes(key) && value)
+    .length;
+}
+
+function prettyLabel(value) {
+  return String(value)
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (match) => match.toUpperCase());
+}
+
+function sanitizeAdKey(value) {
+  return String(value)
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_]+/g, "_")
+    .replace(/^_+|_+$/g, "");
 }
 
 function pendingVerificationUsers() {

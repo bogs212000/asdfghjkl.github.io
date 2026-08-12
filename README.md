@@ -42,5 +42,7 @@ Non-admin users are signed out immediately.
 - ID and selfie verification review with approve/reject confirmation.
 - Reports review with reporter/reported user context and chat transcript viewer.
 - User management with block/unblock, detail view, user listings, and notifications.
+- Admin messaging that creates/reuses a chat room, sends a chat message, and creates a user notification.
+- Ad unit management saved to `appConfig/ads` so unit IDs can be changed from Firebase-backed admin UI.
 - Listing moderation with status actions and listing detail preview.
 - Chat room viewer with latest messages.

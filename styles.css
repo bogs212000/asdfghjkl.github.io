@@ -414,6 +414,11 @@ textarea:focus {
   font-size: 18px;
 }
 
+.panel-note {
+  margin: 6px 0 0;
+  font-size: 13px;
+}
+
 .panel-body {
   padding: 16px;
 }
@@ -516,6 +521,49 @@ textarea:focus {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.settings-form {
+  display: grid;
+  gap: 18px;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.switch-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.switch-row label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #f8f8f5;
+  padding: 0 12px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.switch-row input {
+  width: 18px;
+  min-height: 18px;
+  accent-color: var(--gold);
+}
+
+.inline-fields {
+  display: grid;
+  grid-template-columns: minmax(160px, 240px) minmax(220px, 1fr);
+  gap: 10px;
 }
 
 .table-wrap {
@@ -767,6 +815,10 @@ th {
   .topbar-actions {
     display: grid;
     grid-template-columns: 1fr 42px;
+  }
+
+  .inline-fields {
+    grid-template-columns: 1fr;
   }
 
   .message-bubble {
