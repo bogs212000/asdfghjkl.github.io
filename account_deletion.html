@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>eMarket PH Account Deletion</title>
+  <style>
+    :root {
+      --bg: #f5f5f0;
+      --surface: #ffffff;
+      --ink: #1a1a2e;
+      --muted: #686877;
+      --line: #eaeae5;
+      --green: #2ecc71;
+      --green-dark: #159957;
+      --gold: #e8b84b;
+      --red: #e74c3c;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.92);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+    }
+
+    .topbar-inner {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+    }
+
+    .brand img {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 1px solid var(--line);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid rgba(231, 76, 60, 0.24);
+      background: rgba(231, 76, 60, 0.1);
+      color: var(--red);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    main {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 32px 20px 56px;
+    }
+
+    .hero {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 16px 38px rgba(26, 26, 46, 0.06);
+      padding: 30px;
+      margin-bottom: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero:before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto auto;
+      width: 210px;
+      height: 210px;
+      background: linear-gradient(135deg, rgba(231, 76, 60, 0.16), rgba(46, 204, 113, 0.16));
+      border-bottom-left-radius: 210px;
+    }
+
+    h1 {
+      position: relative;
+      max-width: 720px;
+      margin: 0;
+      font-size: clamp(34px, 6vw, 58px);
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      position: relative;
+      max-width: 760px;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .meta {
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .meta span {
+      border: 1px solid var(--line);
+      background: #fafaf8;
+      border-radius: 12px;
+      padding: 9px 12px;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 330px;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .section,
+    .side {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 16px 38px rgba(26, 26, 46, 0.06);
+      padding: 24px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 16px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.25;
+    }
+
+    p,
+    li {
+      color: var(--muted);
+    }
+
+    p {
+      margin: 10px 0 0;
+    }
+
+    ol,
+    ul {
+      margin: 12px 0 0;
+      padding-left: 22px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: 12px;
+      align-items: start;
+      margin-top: 16px;
+    }
+
+    .step-number {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: var(--green);
+      color: #fff;
+      font-weight: 900;
+    }
+
+    .callout {
+      border-left: 4px solid var(--red);
+      background: #fff8f7;
+      padding: 12px 14px;
+      border-radius: 12px;
+      color: var(--muted);
+    }
+
+    .contact {
+      border-radius: 14px;
+      background: #f8fbf8;
+      border: 1px solid rgba(46, 204, 113, 0.22);
+      padding: 16px;
+      margin-top: 14px;
+    }
+
+    .contact a {
+      color: var(--green-dark);
+      font-weight: 900;
+      text-decoration: none;
+      overflow-wrap: anywhere;
+    }
+
+    .badge {
+      display: inline-flex;
+      margin-top: 12px;
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(232, 184, 75, 0.16);
+      color: #8a6416;
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    footer {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 0 20px 32px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 840px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .hero,
+      .section,
+      .side {
+        border-radius: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <img src="app_icon.jpg" alt="eMarket PH app icon">
+        <span>eMarket PH</span>
+      </div>
+      <span class="pill">Account Deletion</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Request Account Deletion</h1>
+      <p class="lead">Users can request deletion of their eMarket PH account from inside the app or by contacting support. This page explains what is deleted, what is retained temporarily, and how to submit a request.</p>
+      <div class="meta">
+        <span>Effective date: July 16, 2026</span>
+        <span>Company: eMarket PH</span>
+        <span>Built by: Garry Earl Lontes</span>
+      </div>
+    </section>
+
+    <section class="layout">
+      <div class="stack">
+        <article class="section">
+          <h2>Delete Your Account From the App</h2>
+          <div class="step">
+            <div class="step-number">1</div>
+            <div>
+              <strong>Open eMarket PH and sign in.</strong>
+              <p>Use the same account that you want to delete.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <div>
+              <strong>Go to Profile.</strong>
+              <p>Open the profile screen, then choose the account deletion option.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <div>
+              <strong>Submit the deletion request.</strong>
+              <p>You may add an optional reason. Once submitted, public listings are hidden and the account is marked for deletion review.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="section">
+          <h2>Request Deletion by Email</h2>
+          <p>If you cannot access the app, email us from the email address connected to your eMarket PH account.</p>
+          <ul>
+            <li>Use the subject: Account Deletion Request.</li>
+            <li>Include your registered email address and phone number.</li>
+            <li>Include your display name or username, if available.</li>
+            <li>Do not send passwords or sensitive financial information.</li>
+          </ul>
+          <div class="contact">
+            <p>Email support</p>
+            <a href="mailto:emarketph.sup@gmail.com?subject=Account%20Deletion%20Request">emarketph.sup@gmail.com</a>
+          </div>
+        </article>
+
+        <article class="section">
+          <h2>What Will Be Deleted or Hidden</h2>
+          <ul>
+            <li>Your public profile will be marked for deletion.</li>
+            <li>Your active public listings will be hidden from the marketplace.</li>
+            <li>Personal account fields are scheduled for deletion review.</li>
+            <li>Device tokens and ordinary app access are disabled or removed where applicable.</li>
+          </ul>
+        </article>
+
+        <article class="section">
+          <h2>Temporary Retention for Safety Review</h2>
+          <p>Some data may be retained for up to 30 days after a deletion request so eMarket PH can review fraud, safety reports, disputes, chargeback-like complaints, policy violations, or legal requests.</p>
+          <div class="callout">Reports, chat records, listing history, verification records, and audit data may be retained longer only when required for safety investigations, dispute handling, or legal compliance.</div>
+        </article>
+      </div>
+
+      <aside class="side">
+        <h2>Processing Time</h2>
+        <p>Deletion review normally starts after the request is received and account ownership is confirmed.</p>
+        <span class="badge">Retention period: up to 30 days</span>
+
+        <div class="contact">
+          <p>Company</p>
+          <strong>eMarket PH</strong>
+          <p>Built by Garry Earl Lontes</p>
+        </div>
+
+        <div class="contact">
+          <p>Support email</p>
+          <a href="mailto:emarketph.sup@gmail.com">emarketph.sup@gmail.com</a>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <footer>
+    <p>Copyright 2026 eMarket PH. All rights reserved.</p>
+  </footer>
+</body>
+</html>

@@ -38,6 +38,7 @@ const db = getFirestore(app);
 const state = {
   admin: null,
   adminProfile: null,
+  isAdmin: false,
   section: "overview",
   search: "",
   users: [],
@@ -49,6 +50,7 @@ const state = {
 };
 
 const els = {
+  homeView: document.querySelector("#homeView"),
   loginView: document.querySelector("#loginView"),
   dashboardView: document.querySelector("#dashboardView"),
   loadingOverlay: document.querySelector("#loadingOverlay"),
@@ -111,6 +113,18 @@ els.logoutButton.addEventListener("click", async () => {
   await signOut(auth);
 });
 
+document.querySelectorAll("[data-open-admin]").forEach((button) => {
+  button.addEventListener("click", () => {
+    window.location.hash = "admin";
+    showLogin();
+  });
+});
+
+document.querySelector("#backHomeButton")?.addEventListener("click", () => {
+  window.location.hash = "";
+  showHome();
+});
+
 els.closeDialog.addEventListener("click", () => els.dialog.close());
 
 els.globalSearch.addEventListener("input", (event) => {
@@ -132,6 +146,7 @@ document.addEventListener("click", async (event) => {
   const { action, uid, listingId, reportId, roomId, status } = button.dataset;
 
   try {
+    requireAdmin();
     if (action === "view-user") openUserDetails(uid);
     if (action === "notify-user") openNotifyDialog(uid);
     if (action === "message-user") openAdminMessageDialog(uid);
@@ -156,9 +171,14 @@ onAuthStateChanged(auth, async (user) => {
   cleanupSubscriptions();
   state.admin = null;
   state.adminProfile = null;
+  state.isAdmin = false;
   if (!user) {
     setLoading(false);
-    showLogin();
+    if (window.location.hash === "#admin") {
+      showLogin();
+    } else {
+      showHome();
+    }
     return;
   }
 
@@ -176,6 +196,7 @@ onAuthStateChanged(auth, async (user) => {
     }
     state.admin = user;
     state.adminProfile = profile;
+    state.isAdmin = true;
     showDashboard();
     subscribeDashboardData();
   } catch (error) {
@@ -192,24 +213,34 @@ function subscribeDashboardData() {
     onSnapshot(collection(db, "users"), (snap) => {
       state.users = snap.docs.map((item) => normalizeDoc(item));
       renderAll();
-    }),
+    }, handleSnapshotError),
     onSnapshot(collection(db, "listings"), (snap) => {
       state.listings = snap.docs.map((item) => normalizeDoc(item));
       renderAll();
-    }),
+    }, handleSnapshotError),
     onSnapshot(collection(db, "reports"), (snap) => {
       state.reports = snap.docs.map((item) => normalizeDoc(item));
       renderAll();
-    }),
+    }, handleSnapshotError),
     onSnapshot(collection(db, "chatRooms"), (snap) => {
       state.chats = snap.docs.map((item) => normalizeDoc(item));
       renderAll();
-    }),
+    }, handleSnapshotError),
     onSnapshot(doc(db, "appConfig", "ads"), (snap) => {
       state.adsConfig = snap.exists() ? snap.data() : {};
       renderAll();
-    }),
+    }, handleSnapshotError),
   ];
+}
+
+function handleSnapshotError(error) {
+  toast(`Firebase read blocked: ${readableError(error)}`, true);
+}
+
+function requireAdmin() {
+  if (!state.admin || state.isAdmin !== true) {
+    throw new Error("Admin access is required. Sign in with an admin account.");
+  }
 }
 
 function cleanupSubscriptions() {
@@ -218,11 +249,20 @@ function cleanupSubscriptions() {
 }
 
 function showLogin() {
+  els.homeView.classList.add("hidden");
   els.dashboardView.classList.add("hidden");
   els.loginView.classList.remove("hidden");
 }
 
+function showHome() {
+  els.homeView.classList.remove("hidden");
+  els.loginView.classList.add("hidden");
+  els.dashboardView.classList.add("hidden");
+  els.loginError.textContent = "";
+}
+
 function showDashboard() {
+  els.homeView.classList.add("hidden");
   els.loginView.classList.add("hidden");
   els.dashboardView.classList.remove("hidden");
   els.adminName.textContent =
@@ -520,31 +560,31 @@ function userCard(user) {
         </div>
       </div>
       <div class="card-actions">
-        <button class="soft-btn" data-action="view-user" data-uid="${user.id}">
+        <button class="soft-btn" data-action="view-user" data-uid="${escapeAttr(user.id)}">
           <i data-lucide="eye"></i> Details
         </button>
-        <button class="soft-btn" data-action="notify-user" data-uid="${user.id}">
+        <button class="soft-btn" data-action="notify-user" data-uid="${escapeAttr(user.id)}">
           <i data-lucide="bell"></i> Notify
         </button>
-        <button class="soft-btn" data-action="message-user" data-uid="${user.id}">
+        <button class="soft-btn" data-action="message-user" data-uid="${escapeAttr(user.id)}">
           <i data-lucide="message-circle"></i> Message
         </button>
         ${
           pending
-            ? `<button class="primary-btn" data-action="approve-user" data-uid="${user.id}">
+            ? `<button class="primary-btn" data-action="approve-user" data-uid="${escapeAttr(user.id)}">
                 <i data-lucide="check"></i> Approve
               </button>
-              <button class="danger-btn" data-action="reject-user" data-uid="${user.id}">
+              <button class="danger-btn" data-action="reject-user" data-uid="${escapeAttr(user.id)}">
                 <i data-lucide="x"></i> Reject
               </button>`
             : ""
         }
         ${
           status === "blocked"
-            ? `<button class="soft-btn" data-action="unblock-user" data-uid="${user.id}">
+            ? `<button class="soft-btn" data-action="unblock-user" data-uid="${escapeAttr(user.id)}">
                 <i data-lucide="unlock"></i> Unblock
               </button>`
-            : `<button class="danger-btn" data-action="block-user" data-uid="${user.id}">
+            : `<button class="danger-btn" data-action="block-user" data-uid="${escapeAttr(user.id)}">
                 <i data-lucide="ban"></i> Block
               </button>`
         }
@@ -575,16 +615,16 @@ function listingCard(listing) {
         </div>
       </div>
       <div class="card-actions">
-        <button class="soft-btn" data-action="view-listing" data-listing-id="${listing.id}">
+        <button class="soft-btn" data-action="view-listing" data-listing-id="${escapeAttr(listing.id)}">
           <i data-lucide="eye"></i> View
         </button>
-        <button class="primary-btn" data-action="listing-status" data-listing-id="${listing.id}" data-status="active">
+        <button class="primary-btn" data-action="listing-status" data-listing-id="${escapeAttr(listing.id)}" data-status="active">
           <i data-lucide="check-circle"></i> Active
         </button>
-        <button class="soft-btn" data-action="listing-status" data-listing-id="${listing.id}" data-status="paused">
+        <button class="soft-btn" data-action="listing-status" data-listing-id="${escapeAttr(listing.id)}" data-status="paused">
           <i data-lucide="pause-circle"></i> Pause
         </button>
-        <button class="danger-btn" data-action="listing-status" data-listing-id="${listing.id}" data-status="removed">
+        <button class="danger-btn" data-action="listing-status" data-listing-id="${escapeAttr(listing.id)}" data-status="removed">
           <i data-lucide="shield-x"></i> Remove
         </button>
       </div>
@@ -613,16 +653,16 @@ function reportCard(report) {
         </div>
       </div>
       <div class="card-actions">
-        <button class="soft-btn" data-action="view-report" data-report-id="${report.id}">
+        <button class="soft-btn" data-action="view-report" data-report-id="${escapeAttr(report.id)}">
           <i data-lucide="eye"></i> Review
         </button>
-        <button class="primary-btn" data-action="report-status" data-report-id="${report.id}" data-status="reviewing">
+        <button class="primary-btn" data-action="report-status" data-report-id="${escapeAttr(report.id)}" data-status="reviewing">
           <i data-lucide="search-check"></i> Reviewing
         </button>
-        <button class="soft-btn" data-action="report-status" data-report-id="${report.id}" data-status="resolved">
+        <button class="soft-btn" data-action="report-status" data-report-id="${escapeAttr(report.id)}" data-status="resolved">
           <i data-lucide="check-circle"></i> Resolve
         </button>
-        <button class="danger-btn" data-action="report-status" data-report-id="${report.id}" data-status="rejected">
+        <button class="danger-btn" data-action="report-status" data-report-id="${escapeAttr(report.id)}" data-status="rejected">
           <i data-lucide="x-circle"></i> Reject
         </button>
       </div>
@@ -641,7 +681,7 @@ function chatRow(chat) {
       <td>${escapeHtml(chat.lastMessageText || "No message yet")}</td>
       <td>${formatDate(chat.lastMessageAt || chat.updatedAt || chat.createdAt)}</td>
       <td>
-        <button class="soft-btn" data-action="view-chat" data-room-id="${chat.id}">
+        <button class="soft-btn" data-action="view-chat" data-room-id="${escapeAttr(chat.id)}">
           <i data-lucide="messages-square"></i> Open
         </button>
       </td>
@@ -668,10 +708,10 @@ function openUserDetails(uid) {
       ${verificationMedia(user)}
     </div>
     <div class="card-actions">
-      <button class="soft-btn" data-action="notify-user" data-uid="${user.id}">
+      <button class="soft-btn" data-action="notify-user" data-uid="${escapeAttr(user.id)}">
         <i data-lucide="bell"></i> Send notification
       </button>
-      <button class="primary-btn" data-action="message-user" data-uid="${user.id}">
+      <button class="primary-btn" data-action="message-user" data-uid="${escapeAttr(user.id)}">
         <i data-lucide="message-circle"></i> Message user
       </button>
     </div>
@@ -693,7 +733,7 @@ function openListingDetails(listingId) {
   const owner = userById(listing.ownerId);
   showDialog("Listing details", listing.title || "Untitled listing", `
     <div class="media-grid">
-      ${(listing.imageUrls || []).map((url) => `
+      ${(listing.imageUrls || []).map(safeUrl).filter(Boolean).map((url) => `
         <div class="media-tile">
           <img src="${escapeAttr(url)}" alt="Listing image" />
           <a href="${escapeAttr(url)}" target="_blank" rel="noreferrer">Open image</a>
@@ -719,9 +759,9 @@ function openListingDetails(listingId) {
       <div>${escapeHtml(listing.description || "This item has no description.")}</div>
     </div>
     <div class="card-actions">
-      <button class="primary-btn" data-action="listing-status" data-listing-id="${listing.id}" data-status="active">Set active</button>
-      <button class="soft-btn" data-action="listing-status" data-listing-id="${listing.id}" data-status="paused">Pause</button>
-      <button class="danger-btn" data-action="listing-status" data-listing-id="${listing.id}" data-status="removed">Remove</button>
+      <button class="primary-btn" data-action="listing-status" data-listing-id="${escapeAttr(listing.id)}" data-status="active">Set active</button>
+      <button class="soft-btn" data-action="listing-status" data-listing-id="${escapeAttr(listing.id)}" data-status="paused">Pause</button>
+      <button class="danger-btn" data-action="listing-status" data-listing-id="${escapeAttr(listing.id)}" data-status="removed">Remove</button>
     </div>
   `);
 }
@@ -750,21 +790,21 @@ function openReportDetails(reportId) {
     <div class="card-actions">
       ${
         report.chatRoomId
-          ? `<button class="soft-btn" data-action="view-chat" data-room-id="${report.chatRoomId}">
+          ? `<button class="soft-btn" data-action="view-chat" data-room-id="${escapeAttr(report.chatRoomId)}">
               <i data-lucide="messages-square"></i> View conversation
             </button>`
           : ""
       }
       ${
         report.listingId
-          ? `<button class="soft-btn" data-action="view-listing" data-listing-id="${report.listingId}">
+          ? `<button class="soft-btn" data-action="view-listing" data-listing-id="${escapeAttr(report.listingId)}">
               <i data-lucide="store"></i> View listing
             </button>`
           : ""
       }
-      <button class="primary-btn" data-action="report-status" data-report-id="${report.id}" data-status="reviewing">Set reviewing</button>
-      <button class="soft-btn" data-action="report-status" data-report-id="${report.id}" data-status="resolved">Resolve</button>
-      <button class="danger-btn" data-action="report-status" data-report-id="${report.id}" data-status="rejected">Reject</button>
+      <button class="primary-btn" data-action="report-status" data-report-id="${escapeAttr(report.id)}" data-status="reviewing">Set reviewing</button>
+      <button class="soft-btn" data-action="report-status" data-report-id="${escapeAttr(report.id)}" data-status="resolved">Resolve</button>
+      <button class="danger-btn" data-action="report-status" data-report-id="${escapeAttr(report.id)}" data-status="rejected">Reject</button>
     </div>
   `);
 }
@@ -1046,8 +1086,9 @@ function showDialog(kicker, title, body) {
 function messageBubble(message) {
   const sender = userById(message.senderId);
   const isAdmin = message.senderId === state.admin.uid;
-  const image = message.imageUrl
-    ? `<div class="media-tile"><img src="${escapeAttr(message.imageUrl)}" alt="Chat image" /></div>`
+  const imageUrl = safeUrl(message.imageUrl);
+  const image = imageUrl
+    ? `<div class="media-tile"><img src="${escapeAttr(imageUrl)}" alt="Chat image" /></div>`
     : "";
   const location =
     message.type === "location" && message.latitude && message.longitude
@@ -1079,6 +1120,7 @@ function verificationMedia(user) {
     ["Selfie", user.verificationSelfieUrl],
   ];
   return media
+    .map(([label, url]) => [label, safeUrl(url)])
     .map(([label, url]) => {
       if (!url) return "";
       return `
@@ -1238,16 +1280,18 @@ function statusLabel(user) {
 }
 
 function avatarContent(user, name) {
-  if (user.photoUrl) {
-    return `<img src="${escapeAttr(user.photoUrl)}" alt="${escapeAttr(name)}" />`;
+  const photoUrl = safeUrl(user.photoUrl);
+  if (photoUrl) {
+    return `<img src="${escapeAttr(photoUrl)}" alt="${escapeAttr(name)}" />`;
   }
   return escapeHtml((name || "U").slice(0, 1).toUpperCase());
 }
 
 function thumbContent(listing) {
   const url = Array.isArray(listing.imageUrls) ? listing.imageUrls[0] : "";
-  if (url) {
-    return `<img src="${escapeAttr(url)}" alt="${escapeAttr(listing.title || "Listing")}" />`;
+  const imageUrl = safeUrl(url);
+  if (imageUrl) {
+    return `<img src="${escapeAttr(imageUrl)}" alt="${escapeAttr(listing.title || "Listing")}" />`;
   }
   return `<i data-lucide="image"></i>`;
 }
@@ -1301,6 +1345,17 @@ function escapeHtml(value = "") {
 
 function escapeAttr(value = "") {
   return escapeHtml(value);
+}
+
+function safeUrl(value = "") {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  try {
+    const url = new URL(raw);
+    return url.protocol === "https:" ? url.toString() : "";
+  } catch (_) {
+    return "";
+  }
 }
 
 function readableError(error) {

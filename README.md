@@ -7,6 +7,7 @@ This is a standalone Firebase web admin dashboard. It can be hosted from GitHub 
 - `index.html` - app shell and login page
 - `styles.css` - responsive modern UI
 - `app.js` - Firebase Auth, Firestore reads, and admin actions
+- `SECURITY.md` - deployment security checklist and required Firebase rule notes
 
 ## Firebase Setup
 

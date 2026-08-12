@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>eMarket PH Privacy Policy</title>
+  <style>
+    :root {
+      --bg: #f5f5f0;
+      --surface: #ffffff;
+      --ink: #1a1a2e;
+      --muted: #686877;
+      --line: #eaeae5;
+      --green: #2ecc71;
+      --green-dark: #159957;
+      --gold: #e8b84b;
+      --red: #e74c3c;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.92);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+    }
+
+    .topbar-inner {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .brand img {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 1px solid var(--line);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid rgba(46, 204, 113, 0.26);
+      background: rgba(46, 204, 113, 0.12);
+      color: var(--green-dark);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    main {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 32px 20px 56px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.7fr);
+      gap: 20px;
+      align-items: stretch;
+      margin-bottom: 20px;
+    }
+
+    .hero-panel,
+    .contact-panel,
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 16px 38px rgba(26, 26, 46, 0.06);
+    }
+
+    .hero-panel {
+      padding: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-panel:before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto auto;
+      width: 190px;
+      height: 190px;
+      background: linear-gradient(135deg, rgba(46, 204, 113, 0.22), rgba(232, 184, 75, 0.18));
+      border-bottom-left-radius: 190px;
+    }
+
+    h1 {
+      position: relative;
+      max-width: 720px;
+      margin: 0;
+      font-size: clamp(34px, 6vw, 58px);
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      position: relative;
+      max-width: 700px;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .meta {
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .meta span {
+      border: 1px solid var(--line);
+      background: #fafaf8;
+      border-radius: 12px;
+      padding: 9px 12px;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .contact-panel {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .contact-panel h2,
+    .section h2 {
+      margin: 0;
+      font-size: 21px;
+      line-height: 1.25;
+    }
+
+    .contact-card {
+      border-radius: 14px;
+      background: #f8fbf8;
+      border: 1px solid rgba(46, 204, 113, 0.22);
+      padding: 16px;
+    }
+
+    .contact-card p { margin: 0; color: var(--muted); }
+    .contact-card a { color: var(--green-dark); font-weight: 900; text-decoration: none; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .section {
+      padding: 24px;
+    }
+
+    .section.full {
+      grid-column: 1 / -1;
+    }
+
+    .number {
+      width: 38px;
+      height: 38px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 12px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+
+    .section p,
+    .section li {
+      color: var(--muted);
+    }
+
+    .section p {
+      margin: 10px 0 0;
+    }
+
+    ul {
+      margin: 12px 0 0;
+      padding-left: 22px;
+    }
+
+    .callout {
+      margin-top: 12px;
+      border-left: 4px solid var(--green);
+      background: #f8fbf8;
+      padding: 12px 14px;
+      border-radius: 12px;
+      color: var(--muted);
+    }
+
+    footer {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 0 20px 32px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 780px) {
+      .hero,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .hero-panel,
+      .contact-panel,
+      .section {
+        border-radius: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <img src="app_icon.jpg" alt="eMarket PH app icon">
+        <span>eMarket PH</span>
+      </div>
+      <span class="pill">Privacy Policy</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-panel">
+        <h1>Privacy Policy</h1>
+        <p class="lead">This policy explains how eMarket PH collects, uses, protects, and retains information when people use the eMarket mobile marketplace app.</p>
+        <div class="meta">
+          <span>Effective date: July 16, 2026</span>
+          <span>Company: eMarket PH</span>
+          <span>Built by: Garry Earl Lontes</span>
+        </div>
+      </div>
+      <aside class="contact-panel">
+        <div>
+          <h2>Privacy Contact</h2>
+          <p class="lead">For privacy questions, data requests, or account deletion support, contact us by email.</p>
+        </div>
+        <div class="contact-card">
+          <p>Email</p>
+          <a href="mailto:emarketph.sup@gmail.com">emarketph.sup@gmail.com</a>
+        </div>
+      </aside>
+    </section>
+
+    <section class="grid">
+      <article class="section">
+        <span class="number">01</span>
+        <h2>Information We Collect</h2>
+        <p>We collect account information including username, email address, phone number, password, birthday or age information, profile photo, and location details. Seller verification may include valid ID images and a camera selfie.</p>
+        <p>We also collect listings, listing photos, reports, favorites, messages, device notification tokens, app activity, analytics, crash logs, and approximate or precise location when needed for nearby marketplace features.</p>
+      </article>
+
+      <article class="section">
+        <span class="number">02</span>
+        <h2>How We Use Information</h2>
+        <ul>
+          <li>Provide and operate the eMarket marketplace.</li>
+          <li>Display nearby listings and seller profiles.</li>
+          <li>Review ID and selfie verification submissions.</li>
+          <li>Send notifications about messages, reports, and account activity.</li>
+          <li>Show Google AdMob banner or rewarded ads.</li>
+          <li>Detect, prevent, and review fraud, scams, unsafe behavior, and policy violations.</li>
+        </ul>
+      </article>
+
+      <article class="section">
+        <span class="number">03</span>
+        <h2>Payments and Transactions</h2>
+        <p>eMarket PH does not process, handle, or store payment information for buyer-seller transactions. Payment method, meet-up arrangement, delivery, and transaction completion are arranged directly between buyers and sellers outside the app.</p>
+      </article>
+
+      <article class="section">
+        <span class="number">04</span>
+        <h2>Data Sharing</h2>
+        <p>We do not sell, trade, or rent personal information. Data may be shared with other users when needed for marketplace interaction, with trusted service providers that help operate the app, or when required by law or government authorities.</p>
+      </article>
+
+      <article class="section">
+        <span class="number">05</span>
+        <h2>Firebase, AdMob, and Service Providers</h2>
+        <p>eMarket PH uses Firebase and Google services for authentication, database, storage, messaging, analytics, crash reporting, app integrity, and ads. Google AdMob may process device identifiers, app activity, diagnostics, and ad interaction data according to Google policies and device settings.</p>
+      </article>
+
+      <article class="section">
+        <span class="number">06</span>
+        <h2>Data Retention</h2>
+        <p>We retain account data while an account is active. If account deletion is requested, the account is marked for deletion and public listings are hidden. Some information may be retained for up to 30 days for safety, fraud prevention, report review, dispute handling, and legal compliance before deletion review is completed.</p>
+        <p>Listing data, reports, and chat history may be retained where needed for investigations, dispute resolution, or legal obligations.</p>
+      </article>
+
+      <article class="section">
+        <span class="number">07</span>
+        <h2>Your Rights</h2>
+        <p>Under the Philippine Data Privacy Act of 2012, users may request access, correction, deletion, or objection to processing of personal data, and may file a complaint with the National Privacy Commission.</p>
+        <div class="callout">Send requests to emarketph.sup@gmail.com. We may ask for information needed to confirm account ownership before processing a request.</div>
+      </article>
+
+      <article class="section">
+        <span class="number">08</span>
+        <h2>Security</h2>
+        <p>We use safeguards such as secure login, HTTPS/TLS transmission, Firebase security controls, and restricted database access rules. No internet service is completely risk-free, so users should keep login credentials private and use strong passwords.</p>
+      </article>
+
+      <article class="section">
+        <span class="number">09</span>
+        <h2>Children's Privacy</h2>
+        <p>eMarket PH is not intended for children under 13. Seller verification is limited to users who are 18 years old or older. If you believe a child created an account, contact us so we can review and remove the account where required.</p>
+      </article>
+
+      <article class="section">
+        <span class="number">10</span>
+        <h2>Policy Updates</h2>
+        <p>We may update this Privacy Policy from time to time. When changes are made, we may notify users in the app or by email. Continued use of eMarket PH after changes are posted means the updated policy applies.</p>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <p>Copyright 2026 eMarket PH. All rights reserved. Built by Garry Earl Lontes.</p>
+  </footer>
+</body>
+</html>

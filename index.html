@@ -3,7 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>eMarket PH Admin</title>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'self'; script-src 'self' https://www.gstatic.com https://unpkg.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebaseinstallations.googleapis.com; img-src 'self' data: blob: https:; style-src 'self'; upgrade-insecure-requests"
+    />
+    <meta name="referrer" content="no-referrer" />
+    <title>eMarket PH</title>
     <link rel="icon" href="./app_icon.jpg" />
     <link rel="preconnect" href="https://www.gstatic.com" />
     <link rel="preconnect" href="https://unpkg.com" />
@@ -11,7 +16,87 @@
   </head>
   <body>
     <div id="app" class="app-shell">
-      <section id="loginView" class="login-view">
+      <section id="homeView" class="home-view">
+        <header class="site-nav">
+          <a class="site-brand" href="./index.html" aria-label="eMarket PH home">
+            <span class="brand-mark small">
+              <img src="./app_icon.jpg" alt="eMarket PH logo" />
+            </span>
+            <span>
+              <strong>eMarket PH</strong>
+              <small>Local marketplace</small>
+            </span>
+          </a>
+          <nav class="site-links" aria-label="Website navigation">
+            <a href="./privacy_policy.html">Privacy Policy</a>
+            <a href="./account_deletion.html">Account Deletion</a>
+            <button class="primary-btn compact-btn" type="button" data-open-admin>
+              <i data-lucide="lock-keyhole"></i>
+              Sign in
+            </button>
+          </nav>
+        </header>
+
+        <main class="home-main">
+          <section class="hero-section">
+            <div class="hero-copy">
+              <p class="eyebrow">Buy, sell, rent, and find services nearby</p>
+              <h1>Discover local deals around your community.</h1>
+              <p class="hero-lead">
+                eMarket PH helps people browse nearby listings, post items,
+                promote stores, chat with sellers, save favorites, and report
+                unsafe activity inside one marketplace app.
+              </p>
+              <div class="hero-actions">
+                <a class="primary-btn" href="./privacy_policy.html">
+                  <i data-lucide="shield-check"></i>
+                  Privacy Policy
+                </a>
+                <a class="soft-btn" href="./account_deletion.html">
+                  <i data-lucide="user-x"></i>
+                  Account Deletion
+                </a>
+                <button class="ghost-btn" type="button" data-open-admin>
+                  <i data-lucide="layout-dashboard"></i>
+                  Admin Dashboard
+                </button>
+              </div>
+            </div>
+            <div class="app-preview" aria-label="eMarket PH app preview">
+              <img src="./app_load.png" alt="eMarket PH app screen" />
+            </div>
+          </section>
+
+          <section class="home-info-grid" aria-label="App information">
+            <article>
+              <i data-lucide="map-pin"></i>
+              <h2>Nearby listings</h2>
+              <p>
+                Browse items, rentals, services, and stores with location-aware
+                marketplace discovery.
+              </p>
+            </article>
+            <article>
+              <i data-lucide="badge-check"></i>
+              <h2>Seller verification</h2>
+              <p>
+                Verified seller tools help admins review ID and selfie
+                submissions before wider selling access.
+              </p>
+            </article>
+            <article>
+              <i data-lucide="messages-square"></i>
+              <h2>Buyer-seller chat</h2>
+              <p>
+                Users can message sellers, receive notifications, and keep
+                conversations connected to marketplace activity.
+              </p>
+            </article>
+          </section>
+        </main>
+      </section>
+
+      <section id="loginView" class="login-view hidden">
         <div class="login-brand">
           <div class="brand-mark">
             <img src="./app_icon.jpg" alt="eMarket PH logo" />
@@ -27,6 +112,10 @@
         </div>
 
         <form id="loginForm" class="login-card">
+          <button id="backHomeButton" class="ghost-btn back-home-btn" type="button">
+            <i data-lucide="arrow-left"></i>
+            Back to home
+          </button>
           <div>
             <p class="eyebrow">Admin only</p>
             <h2>Sign in</h2>
